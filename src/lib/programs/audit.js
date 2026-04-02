@@ -1,8 +1,8 @@
+import * as p from '@clack/prompts';
+import { program } from "commander";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import color from 'picocolors';
-import * as p from '@clack/prompts';
-import { program } from "commander";
 
 let checksPassed = true;
 
@@ -34,7 +34,7 @@ export function auditCommandDetected(commandRun, path = null) {
  * @returns Array of objects detailing what directories, files, and file extensions to ignore
  */
 function dddignoreInterpreter(root) {
-  let list = [];
+  let list = []; // TODO check if a different data structure would be more optimized for this.
 
   readdirSync(root).forEach(item => {
     const FULL_PATH = path.join(root, item);
@@ -51,7 +51,7 @@ function dddignoreInterpreter(root) {
           let removeComment = trimmed.split('#')[0];
           trimmed = removeComment.trim();
         }
-        
+
         if (!trimmed.startsWith('#')) {
           let type = "file";
 
@@ -74,6 +74,7 @@ function dddignoreInterpreter(root) {
     }
   })
 
+  // TODO why not just return list?
   if (list.length !== 0) {
     return list;
   } else {
@@ -137,10 +138,11 @@ function auditNavigator(root, dddignore) {
  * @param fileLocation Full file path of file to be audited
  */
 function auditFile(fileLocation, fileName) {
-  let data = [];
+  let data = []; // TODO check if there is a better data structure.
   p.intro(`\n ${color.bgBlue(color.white(` 🪄 Auditing: ${fileName} `))}`)
   let lines = readFileSync(fileLocation, 'utf-8').split('\n');
 
+  // TODO check if all of these arrays should be a different data structure for optimal iteration speed
   const COLOR_PROPERTIES = [
     "accent-color",
     "background-color",
@@ -444,6 +446,7 @@ function helpAuditBorderThickness(borderThickness) {
  */
 function helpAuditBoxShadow(boxShadow) {
   if (boxShadow.includes('px')) {
+    // TODO check if below arrays should be a different data structure
     const SMALL = [ " 1px", " 2px", " 3px", " 4px" ];
     const MEDIUM = [ " 5px", " 6px", " 7px", " 8px", ];
     const LARGE = [ " 9px", " 10px", " 11px", " 12px", ];
@@ -479,6 +482,7 @@ function helpAuditBoxShadow(boxShadow) {
  * @param color CSS preset color
  */
 function helpAuditColors(color) {
+  // TODO Object that contains CSS color and paired DDD color?
   switch (color.toLowerCase()) {
     case "aliceblue":
       return "--ddd-theme-default-slateLight";
@@ -790,17 +794,14 @@ function helpAuditColors(color) {
 function helpAuditFontFamily(fontFamily) {
   fontFamily = fontFamily.toLowerCase();
 
-  if (fontFamily.includes('roboto') || 
-      fontFamily.includes('franklin gothic medium') ||
-      fontFamily.includes('tahoma') ||
-      fontFamily.includes('sans-serif')) {
-    return "--ddd-font-primary";
-  }
-  else if (fontFamily.includes('roboto slab') || fontFamily.includes('serif')) {
-    return "--ddd-font-secondary";
-  }
-  else if (fontFamily.includes('roboto condensed')) {
-    return "--ddd-font-navigation";
+  const FONT_FAMILIES = [
+    { type: "--ddd-font-primary",    fonts: ["roboto", "franklin gothic medium", "tahoma", "sans-serif"]},
+    { type: "--ddd-font-secondary",  fonts: ["roboto slab", "serif"] },
+    { type: "--ddd-font-navigation", fonts: ["roboto condensed"] }
+  ]
+
+  for (const object of FONT_FAMILIES) {
+    if (object.fonts.includes(fontFamily)) return object.type
   }
 
   return "--ddd-font-primary";
