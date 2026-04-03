@@ -142,7 +142,7 @@ function auditFile(fileLocation, fileName) {
   p.intro(`\n ${color.bgBlue(color.white(` 🪄 Auditing: ${fileName} `))}`)
   let lines = readFileSync(fileLocation, 'utf-8').split('\n');
 
-  const COLOR_PROPERTIES = [
+  const COLOR_PROPERTIES = new Set([
     "accent-color",
     "background-color",
     "border-color",
@@ -152,9 +152,9 @@ function auditFile(fileLocation, fileName) {
     "border-top-color",
     "caret-color",
     "color",
-  ];
+  ]);
 
-  const SPACING_PROPERTIES = [
+  const SPACING_PROPERTIES = new Set([
     // Margin properties
     "margin",
     "margin-top",
@@ -203,9 +203,9 @@ function auditFile(fileLocation, fileName) {
     "inset-inline",
     "inset-inline-start",
     "inset-inline-end"
-  ];
+  ]);
 
-  const BORDER_SHORTHANDS = [
+  const BORDER_SHORTHANDS = new Set([
     "border",
     "outline",
     "border-top",
@@ -213,9 +213,9 @@ function auditFile(fileLocation, fileName) {
     "border-bottom",
     "border-left",
     "column-rule",
-  ]
+  ]);
 
-  const BORDER_THICKNESS_PROPERTIES = [
+  const BORDER_THICKNESS_PROPERTIES = new Set([
     "border-width",
     "border-top-width",
     "border-right-width",
@@ -229,9 +229,9 @@ function auditFile(fileLocation, fileName) {
     "border-inline-end-width",
     "outline-width",
     "column-rule-width",
-  ]
+  ]);
 
-  const RADIUS_PROPERTIES = [
+  const RADIUS_PROPERTIES = new Set([
     "border-radius",
 
     // Individual corners
@@ -245,7 +245,7 @@ function auditFile(fileLocation, fileName) {
     "border-right-radius",
     "border-bottom-radius",
     "border-left-radius",
-  ]
+  ]);
 
   lines.forEach(line => {
     let trimmed = line.trim();
@@ -255,7 +255,7 @@ function auditFile(fileLocation, fileName) {
       lineAttribute = lineAttribute.replace(';', '');
 
       // Check border shorthands
-      if (BORDER_SHORTHANDS.includes(lineProperty) && !lineAttribute.includes("ddd")) {
+      if (BORDER_SHORTHANDS.has(lineProperty) && !lineAttribute.includes("ddd")) {
         data.push({
           "Line Number": lines.indexOf(line) + 1,
           "CSS Property": lineProperty,
@@ -265,7 +265,7 @@ function auditFile(fileLocation, fileName) {
       }
 
       // Check border thicknesses
-      if (BORDER_THICKNESS_PROPERTIES.includes(lineProperty) && !lineAttribute.includes("ddd")) {
+      if (BORDER_THICKNESS_PROPERTIES.has(lineProperty) && !lineAttribute.includes("ddd")) {
         data.push({
           "Line Number": lines.indexOf(line) + 1,
           "CSS Property": lineProperty,
@@ -285,7 +285,7 @@ function auditFile(fileLocation, fileName) {
       }
 
       // Check colors
-      if (COLOR_PROPERTIES.includes(lineProperty) && !lineAttribute.includes("ddd")) {
+      if (COLOR_PROPERTIES.has(lineProperty) && !lineAttribute.includes("ddd")) {
         data.push({
           "Line Number": lines.indexOf(line) + 1,
           "CSS Property": lineProperty,
@@ -345,7 +345,7 @@ function auditFile(fileLocation, fileName) {
       }
 
       // Check radius
-      if (RADIUS_PROPERTIES.includes(lineProperty) && !lineAttribute.includes("ddd")) {
+      if (RADIUS_PROPERTIES.has(lineProperty) && !lineAttribute.includes("ddd")) {
         data.push({
           "Line Number": lines.indexOf(line) + 1,
           "CSS Property": lineProperty,
@@ -355,7 +355,7 @@ function auditFile(fileLocation, fileName) {
       }
 
       // Check spacing
-      if (SPACING_PROPERTIES.includes(lineProperty) && !lineAttribute.includes("ddd")) {
+      if (SPACING_PROPERTIES.has(lineProperty) && !lineAttribute.includes("ddd")) {
         data.push({
           "Line Number": lines.indexOf(line) + 1,
           "CSS Property": lineProperty,
