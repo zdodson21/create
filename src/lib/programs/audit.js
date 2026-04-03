@@ -34,7 +34,7 @@ export function auditCommandDetected(commandRun, path = null) {
  * @returns Array of objects detailing what directories, files, and file extensions to ignore
  */
 function dddignoreInterpreter(root) {
-  let list = []; // TODO check if a different data structure would be more optimized for this.
+  let list = [];
 
   readdirSync(root).forEach(item => {
     const FULL_PATH = path.join(root, item);
@@ -74,12 +74,7 @@ function dddignoreInterpreter(root) {
     }
   })
 
-  // TODO why not just return list?
-  if (list.length !== 0) {
-    return list;
-  } else {
-    return [];
-  }
+  return list;
 }
 
 /**
@@ -142,7 +137,6 @@ function auditFile(fileLocation, fileName) {
   p.intro(`\n ${color.bgBlue(color.white(` 🪄 Auditing: ${fileName} `))}`)
   let lines = readFileSync(fileLocation, 'utf-8').split('\n');
 
-  // TODO check if all of these arrays should be a different data structure for optimal iteration speed
   const COLOR_PROPERTIES = [
     "accent-color",
     "background-color",
@@ -482,8 +476,6 @@ function helpAuditBoxShadow(boxShadow) {
  * @param color CSS preset color
  */
 function helpAuditColors(color) {
-  // TODO Object that contains DDD colors as ID and array of CSS colors applicable to that DDD color
-
   const COLOR_OBJECT = {
     "aliceblue":            "--ddd-theme-default-slateLight",
     "antiquewhite":         "--ddd-theme-default-roarLight",
