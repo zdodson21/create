@@ -5,7 +5,7 @@ import path from "node:path";
 import color from 'picocolors';
 
 let checksPassed = true;
-//  TODO make sure all JSDocs are accurate (especially params and returns)
+
 /**
  * @description Runs the audit command, to be called when `hax audit` command is run
  * @param commandRun Enables command line flags (such as `--debug`)
