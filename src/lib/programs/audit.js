@@ -8,6 +8,7 @@ let checksPassed = true;
 //  TODO make sure all JSDocs are accurate (especially params and returns)
 /**
  * @description Runs the audit command, to be called when `hax audit` command is run
+ * @param commandRun Enables command line flags (such as `--debug`)
  */
 export function auditCommandDetected(commandRun, path = null) {
   const PROJECT_ROOT = path || process.cwd();
@@ -31,6 +32,7 @@ export function auditCommandDetected(commandRun, path = null) {
 
 /**
  * @description Gets items from dddignore with a hierarchy (.dddignore affects folders below it, never above it)
+ * @param root The root of the project directory (should be where the command is run from)
  * @returns Array of objects detailing what directories, files, and file extensions to ignore
  */
 function dddignoreInterpreter(root) {
@@ -79,6 +81,8 @@ function dddignoreInterpreter(root) {
 
 /**
  * @description Navigate through file pathes, auditing any file that is not in the .dddignore
+ * @param root The root of the project directory (should be where the command is run from)
+ * @param dddignore Files, directories, and file types to ignore in file navigation and auditing
  */
 function auditNavigator(root, dddignore) {
   readdirSync(root).forEach(item => {
@@ -131,9 +135,10 @@ function auditNavigator(root, dddignore) {
 /**
  * @description Audits component line by line to suggest CSS changes
  * @param fileLocation Full file path of file to be audited
+ * @param fileName Name of the file being audited
  */
 function auditFile(fileLocation, fileName) {
-  let data = []; // TODO check if there is a better data structure.
+  let data = [];
   p.intro(`\n ${color.bgBlue(color.white(` 🪄 Auditing: ${fileName} `))}`)
   let lines = readFileSync(fileLocation, 'utf-8').split('\n');
 
@@ -370,7 +375,7 @@ function auditFile(fileLocation, fileName) {
 }
 
 /**
- * @description returns code for automation purposes. 0 = compliant, 1 = not compliant
+ * @description Exits program with a return code for automation purposes. 0 = compliant, 1 = not compliant
  */
 function returnCode() {
   if (!checksPassed) { // Not-compliant
@@ -386,6 +391,7 @@ function returnCode() {
 /**
  * @description Audits border related CSS properties based on preset borders and thicknesses
  * @param border Pre-audit CSS border value
+ * @returns String containing suggested changes
  */
 function helpAuditBorderShorthands(borderPreset) {
   if (borderPreset.includes('px')) {
@@ -412,6 +418,7 @@ function helpAuditBorderShorthands(borderPreset) {
 /**
  * @description Audits border related CSS properties
  * @param borderThickness Pre-audited CSS border thickness
+ * @returns String containing suggested changes
  */
 function helpAuditBorderThickness(borderThickness) {
   if (borderThickness.includes("px")) {
@@ -437,10 +444,10 @@ function helpAuditBorderThickness(borderThickness) {
 /**
  * @description Audits border related CSS properties
  * @param boxShadow Pre-audited CSS box-shadow attribute
+ * @returns String containing suggested changes
  */
 function helpAuditBoxShadow(boxShadow) {
   if (boxShadow.includes('px')) {
-    // TODO check if below arrays should be a different data structure
     const SMALL = [ " 1px", " 2px", " 3px", " 4px" ];
     const MEDIUM = [ " 5px", " 6px", " 7px", " 8px", ];
     const LARGE = [ " 9px", " 10px", " 11px", " 12px", ];
@@ -474,6 +481,7 @@ function helpAuditBoxShadow(boxShadow) {
 /**
  * @description Audits color related CSS properties based on the CSS preset colors
  * @param color CSS preset color
+ * @returns String containing suggested changes
  */
 function helpAuditColors(color) {
   const COLOR_OBJECT = {
@@ -634,6 +642,7 @@ function helpAuditColors(color) {
 /**
  * @description Audits font-family CSS property
  * @param fontFamily Pre-audit CSS font-family value
+ * @returns String containing suggested changes
  */
 function helpAuditFontFamily(fontFamily) {
   fontFamily = fontFamily.toLowerCase();
@@ -654,6 +663,7 @@ function helpAuditFontFamily(fontFamily) {
 /**
  * @description Audits font-size CSS property
  * @param fontSize Pre-audit CSS font-size value
+ * @returns String containing suggested changes
  */
 function helpAuditFontSize(fontSize) {
   if (fontSize.includes('px')) {
@@ -662,16 +672,16 @@ function helpAuditFontSize(fontSize) {
     if (fontSize <= 16) {
       return "--ddd-font-size-4xs"; // 16px
     }
-    else if (fontSize > 16 || fontSize <= 18) {
+    else if (fontSize > 16 && fontSize <= 18) {
       return "--ddd-font-size-3xs"; // 18px
     }
-    else if (fontSize > 18 || fontSize <= 20) {
+    else if (fontSize > 18 && fontSize <= 20) {
       return "--ddd-font-size-xxs"; // 20px
     }
-    else if (fontSize > 20 || fontSize <= 22) {
+    else if (fontSize > 20 && fontSize <= 22) {
       return "--ddd-font-size-xs"; // 22px
     }
-    else if (fontSize > 22 || fontSize <= 24) {
+    else if (fontSize > 22 && fontSize <= 24) {
       return "--ddd-font-size-s"; // 24px
     }
     else if (fontSize > 24 && fontSize <= 28) {
@@ -715,6 +725,7 @@ function helpAuditFontSize(fontSize) {
 /**
  * @description Audits font-weight CSS property
  * @param fontWeight Pre-audit CSS font-weight value
+ * @returns String containing suggested changes
  */
 function helpAuditFontWeight(fontWeight) {
   const REGEX = /\d+/;
@@ -757,6 +768,7 @@ function helpAuditFontWeight(fontWeight) {
 /**
  * @description Audits letter-spacing CSS property
  * @param letterSpacing Pre-audit CSS letter-spacing value
+ * @returns String containing suggested changes
  */
 function helpAuditLetterSpacing(letterSpacing) {
   if (letterSpacing.includes('px')) {
@@ -768,7 +780,7 @@ function helpAuditLetterSpacing(letterSpacing) {
     else if (letterSpacing > 0.08 && letterSpacing <= 0.09) {
       return "--ddd-ls-18-sm"; // 0.09px
     } 
-    else if (letterSpacing > 0.09 & letterSpacing <= 0.1) {
+    else if (letterSpacing > 0.09 && letterSpacing <= 0.1) {
       return "--ddd-ls-20-sm"; // 0.1px
     }
     else if (letterSpacing > 0.1 && letterSpacing <= 0.11) {
@@ -842,6 +854,7 @@ function helpAuditLetterSpacing(letterSpacing) {
 /**
  * @description Audits line-height CSS property
  * @param lineHeight Pre-audit CSS line-height value
+ * @returns String containing suggested changes
  */
 function helpAuditLineHeight(lineHeight) {
   if (lineHeight.includes('%')) {
@@ -864,6 +877,7 @@ function helpAuditLineHeight(lineHeight) {
 /**
  * @description Audits radius related CSS properties based on px and % values
  * @param radius Pre-audit CSS radius value
+ * @returns String containing suggested changes
  */
 function helpAuditRadius(radius) {
   if (radius.includes("px")) {
@@ -905,6 +919,7 @@ function helpAuditRadius(radius) {
 /**
  * @description Audits spacing related CSS properties based on px values
  * @param spacing Pre-audit CSS spacing value
+ * @returns String containing suggested changes
  */
 function helpAuditSpacing(spacing) {
   if (spacing.includes('px')) {
